@@ -37,9 +37,15 @@ jobs:
           name: patrons.json
           path: ./patrons.json
           if-no-files-found: error
+
       - name: Compare hash Equality
         id: is_hash_equal
-        run: echo ::set-output name=EQUAL::${{ '${{steps.patrons_hash_pre.outputs.HASH}}' != '${{steps.patrons_hash_post.outputs.HASH}}' }}
+        run: |
+          echo "Pre  hash:"
+          echo ${{steps.patrons_hash_pre.outputs.HASH}}
+          echo "Post hash:"
+          echo ${{steps.patrons_hash_post.outputs.HASH}}
+          echo ::set-output name=EQUAL::${{ steps.patrons_hash_pre.outputs.HASH != steps.patrons_hash_post.outputs.HASH }}
 
       # only execute if the hashes are different
       - name: Configure commit
