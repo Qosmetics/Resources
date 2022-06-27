@@ -38,25 +38,16 @@ jobs:
           path: ./patrons.json
           if-no-files-found: error
 
-      - name: Compare hash Equality
-        id: hash_not_equal
-        run: |
-          echo "Pre  hash:"
-          echo ${{steps.patrons_hash_pre.outputs.HASH}}
-          echo "Post hash:"
-          echo ${{steps.patrons_hash_post.outputs.HASH}}
-          echo ::set-output name=NOT_EQUAL::${{ steps.patrons_hash_pre.outputs.HASH != steps.patrons_hash_post.outputs.HASH }}
-
       # only execute if the hashes are different
       - name: Configure commit
-        if: ${{ steps.hash_not_equal.outputs.NOT_EQUAL == true}}
+        if: ${{ steps.patrons_hash_pre.outputs.HASH != steps.patrons_hash_post.outputs.HASH }}
         run: |
           git config user.name "Github Actions"
           git config user.email "<>"
 
       # only execute if the hashes are different
       - name: Commit & push patrons.json
-        if: ${{ steps.hash_not_equal.outputs.NOT_EQUAL == true}}
+        if: ${{ steps.patrons_hash_pre.outputs.HASH != steps.patrons_hash_post.outputs.HASH }}
         run: |
           git add patrons.json
           git commit -m "Updated patrons.json"
