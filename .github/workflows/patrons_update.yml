@@ -29,8 +29,7 @@ jobs:
 
       - name: Hash patrons.json post-edit
         id: patrons_hash_post
-        run: |
-            echo ::set-output name=HASH::"${{hashFiles('patrons.json')}}"
+        run: echo ::set-output name=HASH::"${{hashFiles('patrons.json')}}"
 
       - name: Upload patrons artifact
         uses: actions/upload-artifact@v2
@@ -38,17 +37,20 @@ jobs:
           name: patrons.json
           path: ./patrons.json
           if-no-files-found: error
+      - name: Compare hash Equality
+        id: is_hash_equal
+        run: echo ::set-output name=EQUAL::${{ '${{steps.patrons_hash_pre.outputs.HASH}}' != '${{steps.patrons_hash_post.outputs.HASH}}' }}
 
       # only execute if the hashes are different
       - name: Configure commit
-        if: ${{ ${{steps.patrons_hash_pre.outputs.HASH}} != ${{steps.patrons_hash_post.outputs.HASH}} }}
+        if: ${{steps.is_hash_equal.outputs.EQUAL}}
         run: |
           git config user.name "Github Actions"
           git config user.email "<>"
 
       # only execute if the hashes are different
       - name: Commit & push patrons.json
-        if: ${{ ${{steps.patrons_hash_pre.outputs.HASH}} != ${{steps.patrons_hash_post.outputs.HASH}} }}
+        if: ${{steps.is_hash_equal.outputs.EQUAL}}
         run: |
           git add patrons.json
           git commit -m "Updated patrons.json"
