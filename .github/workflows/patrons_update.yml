@@ -7,6 +7,9 @@ on:
     - cron: '45 3 * * *'
   workflow_dispatch:
 
+env:
+  patrons_filepath: "./files/patrons.json"
+  
 jobs:
   schedule-patrons:
     runs-on: ubuntu-latest
@@ -19,7 +22,7 @@ jobs:
       - name: Hash patrons.json pre-edit
         id: patrons_hash_pre
         run: |
-            echo ::set-output name=HASH::"${{hashFiles('patrons.json')}}"
+            echo ::set-output name=HASH::"${{hashFiles(${{ patrons_filepath }})}}"
 
       - name: Pip install dependencies
         run: pip install -r requirements.txt
@@ -29,13 +32,13 @@ jobs:
 
       - name: Hash patrons.json post-edit
         id: patrons_hash_post
-        run: echo ::set-output name=HASH::"${{hashFiles('patrons.json')}}"
+        run: echo ::set-output name=HASH::"${{hashFiles(${{ patrons_filepath }})}}"
 
       - name: Upload patrons artifact
         uses: actions/upload-artifact@v2
         with:
           name: patrons.json
-          path: ./patrons.json
+          path: ${{ patrons_filepath }}
           if-no-files-found: error
 
       # only execute if the hashes are different
@@ -49,6 +52,6 @@ jobs:
       - name: Commit & push patrons.json
         if: ${{ steps.patrons_hash_pre.outputs.HASH != steps.patrons_hash_post.outputs.HASH }}
         run: |
-          git add patrons.json
+          git add ${{ patrons_filepath }}
           git commit -m "Updated patrons.json"
           git push

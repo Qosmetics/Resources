@@ -23,6 +23,8 @@ patreon_token_filename = "patreon_token.txt"
 discord_token_filename = "discord_token.txt"
 discord_appid_filename = "discord_appid.txt"
 
+patrons_filepath = "./files/patrons.json"
+
 official_amt = 200
 enthusiastic_amt = 500
 amazing_amt = 1000
@@ -167,7 +169,7 @@ async def main():
     # close discord api
     await discord_api.close()
 
-    patronfile = patrons.read("./patrons.json")
+    patronfile = patrons.read(patrons_filepath)
 
     patronfile.enthusiastic.clear()
     patronfile.amazing.clear()
