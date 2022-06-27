@@ -16,15 +16,40 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Hash patrons.json pre-edit
+        id: patrons_hash_pre
+        run: |
+            echo ::set-output hash=HASH::"${hashFiles('patrons.json')}"
+
       - name: Pip install dependencies
         run: pip install -r requirements.txt
-    
+
       - name: Run fetch.py
         run: python fetch.py ${{secrets.PATREON_TOKEN}} ${{secrets.DISCORD_BOT_TOKEN}} ${{secrets.DISCORD_APPID}}
-    
+
+      - name: Hash patrons.json post-edit
+        id: patrons_hash_post
+        run: |
+            echo ::set-output hash=HASH::"${{hashFiles('patrons.json')}}"
+
       - name: Upload patrons artifact
         uses: actions/upload-artifact@v2
         with:
           name: patrons.json
           path: ./patrons.json
           if-no-files-found: error
+
+      # only execute if the hashes are different
+      - name: Configure commit
+        if: ${{steps.patrons_hash_pre.outputs.HASH}} != ${{steps.patrons_hash_post.outputs.HASH}}
+        run: |
+          git config user.name "Github Actions"
+          git config user.email "<>"
+
+      # only execute if the hashes are different
+      - name: Commit & push patrons.json
+        if: ${{steps.patrons_hash_pre.outputs.HASH}} != ${{steps.patrons_hash_post.outputs.HASH}}
+        run: |
+          git add patrons.json
+          git commit -m "Updated patrons.json"
+          git push
