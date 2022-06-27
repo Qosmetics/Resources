@@ -1,0 +1,28 @@
+name: Update patrons.json
+
+on:
+  schedule:
+    # | minute | hour | day of month | month of year | day of week | (https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07)
+    # every day at 3:45 AM UTC (arbitrarily chosen)
+    - cron: '45 3 * * *'
+  workflow-dispatch:
+
+jobs:
+  update_patreons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v4
+
+    - name: Pip install dependencies
+      run: pip install -r requirements.txt
+    
+    - name: Run fetch.py
+      run: python fetch.py ${{github.secrets.PATREON_TOKEN}} ${{github.secrets.DISCORD_BOT_TOKEN}} ${{github.secrets.DISCORD_APPID}}
+    
+    - name: Upload patrons artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: patrons.json
+        path: ./patrons.json
+        if-no-files-found: error
