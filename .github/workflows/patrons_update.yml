@@ -19,7 +19,7 @@ jobs:
       - name: Hash patrons.json pre-edit
         id: patrons_hash_pre
         run: |
-            echo ::set-output hash=HASH::"${hashFiles('patrons.json')}"
+            echo ::set-output hash=HASH::"${{hashFiles('patrons.json')}}"
 
       - name: Pip install dependencies
         run: pip install -r requirements.txt
