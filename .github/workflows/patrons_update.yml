@@ -41,14 +41,14 @@ jobs:
 
       # only execute if the hashes are different
       - name: Configure commit
-        if: ${{steps.patrons_hash_pre.outputs.HASH}} != ${{steps.patrons_hash_post.outputs.HASH}}
+        if: ${{ ${{steps.patrons_hash_pre.outputs.HASH}} != ${{steps.patrons_hash_post.outputs.HASH}} }}
         run: |
           git config user.name "Github Actions"
           git config user.email "<>"
 
       # only execute if the hashes are different
       - name: Commit & push patrons.json
-        if: ${{steps.patrons_hash_pre.outputs.HASH}} != ${{steps.patrons_hash_post.outputs.HASH}}
+        if: ${{ ${{steps.patrons_hash_pre.outputs.HASH}} != ${{steps.patrons_hash_post.outputs.HASH}} }}
         run: |
           git add patrons.json
           git commit -m "Updated patrons.json"
