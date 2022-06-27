@@ -137,9 +137,9 @@ async def main():
         
         all_time_amt = pledge.attribute('total_historical_amount_cents')
         monthly_amt = 0
-        reward = pledge.relationship('reward')
-        if reward:
-            monthly_amt = reward.attribute('amount_cents')
+        
+        if pledge.relationships()['reward']['data']:
+            monthly_amt = pledge.relationship('reward').attribute('amount_cents')
         
         patron = pledge.relationship('patron')
         name = await get_name(discord_api, patron)
