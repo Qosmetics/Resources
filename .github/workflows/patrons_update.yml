@@ -35,7 +35,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: patrons.json
-          path: ${{ patrons_filepath }}
+          path: './files/patrons.json'
           if-no-files-found: error
 
       # only execute if the hashes are different
@@ -49,6 +49,6 @@ jobs:
       - name: Commit & push patrons.json
         if: ${{ steps.patrons_hash_pre.outputs.HASH != steps.patrons_hash_post.outputs.HASH }}
         run: |
-          git add ${{ patrons_filepath }}
+          git add './files/patrons.json'
           git commit -m "Updated patrons.json"
           git push
