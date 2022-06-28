@@ -7,9 +7,6 @@ on:
     - cron: '45 3 * * *'
   workflow_dispatch:
 
-env:
-  patrons_filepath: "./files/patrons.json"
-  
 jobs:
   schedule-patrons:
     runs-on: ubuntu-latest
@@ -22,7 +19,7 @@ jobs:
       - name: Hash patrons.json pre-edit
         id: patrons_hash_pre
         run: |
-            echo ::set-output name=HASH::"${{hashFiles('${{ env.patrons_filepath }}')}}"
+            echo ::set-output name=HASH::"${{hashFiles('./files/patrons.json')}}"
 
       - name: Pip install dependencies
         run: pip install -r requirements.txt
@@ -32,7 +29,7 @@ jobs:
 
       - name: Hash patrons.json post-edit
         id: patrons_hash_post
-        run: echo ::set-output name=HASH::"${{hashFiles('${{ env.patrons_filepath }}')}}"
+        run: echo ::set-output name=HASH::"${{hashFiles('./files/patrons.json')}}"
 
       - name: Upload patrons artifact
         uses: actions/upload-artifact@v2
