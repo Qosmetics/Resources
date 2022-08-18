@@ -194,4 +194,5 @@ if __name__ == '__main__':
         loop.run_until_complete(main())
     except:
         # if there is any exception, exit with an exit code
-        exit(1)
+        print("Exception ocurred in main async function")
+        exit(2)
