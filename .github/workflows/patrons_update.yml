@@ -32,7 +32,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run fetch.py
-        run: python fetch.py ${{secrets.PATREON_TOKEN}} ${{secrets.DISCORD_BOT_TOKEN} ${{secrets.DISCORD_APPID}}
+        run: python fetch.py ${{secrets.PATREON_TOKEN}} ${{secrets.DISCORD_BOT_TOKEN}} ${{secrets.DISCORD_APPID}}
 
       - name: Hash patrons.json post-edit
         id: patrons_hash_post
