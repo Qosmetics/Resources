@@ -31,17 +31,8 @@ jobs:
       - name: Pip install dependencies
         run: pip install -r requirements.txt
 
-      - name: Patreon to File
-        run: echo ${{secrets.PATREON_TOKEN}} > patreon_token.txt
-
-      - name: Discord to File
-        run: echo ${{secrets.DISCORD_BOT_TOKEN}} > discord_token.txt
-
-      - name: Appid to File
-        run: echo ${{secrets.DISCORD_APPID}} > discord_appid.txt
-
       - name: Run fetch.py
-        run: python fetch.py
+        run: python fetch.py ${{secrets.PATREON_TOKEN}} ${{secrets.DISCORD_BOT_TOKEN} ${{secrets.DISCORD_APPID}}
 
       - name: Hash patrons.json post-edit
         id: patrons_hash_post
