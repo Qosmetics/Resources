@@ -197,7 +197,9 @@ if __name__ == '__main__':
     asyncio.set_event_loop(loop)
     try:
         loop.run_until_complete(main())
-    except:
+    except Exception as e:
         # if there is any exception, exit with an exit code
-        print("Exception ocurred in main async function")
+        print("Exception ocurred in main async function:")
+        print(e)
+
         exit(2)
