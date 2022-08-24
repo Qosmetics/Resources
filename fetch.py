@@ -86,7 +86,7 @@ async def get_discord_name(client, patron) -> (None | str):
     discord = socials['discord']
     if discord:
         discord_user_id = int(discord['user_id'])
-        user = await client.fetch_user(discord_user_id)
+        user = await client.get_user_info(discord_user_id)
         if user:
             return user.name
     return None
@@ -112,7 +112,6 @@ async def get_name(client, patron) -> str:
 class MyClient(dc.Client):
     async def on_ready(self):
         await main(self)
-        await self.close()
 
 
 async def main(discord_api):
@@ -148,6 +147,7 @@ async def main(discord_api):
             monthly_amt = pledge.relationship('reward').attribute('amount_cents')
         
         patron = pledge.relationship('patron')
+
         name = await get_name(discord_api, patron)
         tier = None
 
@@ -190,5 +190,10 @@ async def main(discord_api):
 if __name__ == '__main__':
     intents = dc.Intents.default()
     client = MyClient(application_id = discord_appid(), intents=intents)
+    #try:
     client.run(discord_token())
-    print('Done!')
+    #except:
+    #    client.close();
+    #    exit(1)
+    #finally:
+    #    client.close();
