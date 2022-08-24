@@ -109,10 +109,14 @@ async def get_name(client, patron) -> str:
     else:
         return first_name
 
-async def main():
+class MyClient(dc.Client):
+    async def on_ready(self):
+        await main(self)
+        await self.close()
+
+
+async def main(discord_api):
     patreon_api = patreon.API(patreon_token())
-    discord_api = dc.Client()
-    await discord_api.login(discord_token())
 
     campaign = patreon_api.fetch_campaign()
     campaign_id = campaign.data()[0].id()
@@ -165,10 +169,6 @@ async def main():
             print(f"A user was declined")
 
     usable_pledges.sort(key=lambda x: x['alltime'], reverse=True)
-
-    # close discord api
-    await discord_api.close()
-
     patronfile = patrons.read(patrons_filepath)
 
     patronfile.enthusiastic.clear()
@@ -188,11 +188,6 @@ async def main():
 
 
 if __name__ == '__main__':
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    try:
-        loop.run_until_complete(main())
-    except:
-        # if there is any exception, exit with an exit code
-        print("Exception ocurred in main async function")
-        exit(2)
+    client = MyClient()
+    client.run(discord_token())
+    print('Done!')
