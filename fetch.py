@@ -33,10 +33,18 @@ legendary_amt = 2500
 
 class MyClient(dc.Client):
     async def on_ready(self):
+        toRaise = None
         try:
             await update_info(self)
+        except Exception as e:
+            print("Exception thrown in update_info")
+            toRaise = e
         finally:
             await self.close()
+
+        if toRaise is not None:
+            print("Re-raising exception")
+            raise toRaise
 
 def patreon_token() -> str:
     if len(sys.argv) > 1:
