@@ -188,6 +188,6 @@ async def main(discord_api):
 
 
 if __name__ == '__main__':
-    client = MyClient()
+    client = MyClient(application_id = discord_appid())
     client.run(discord_token())
     print('Done!')
