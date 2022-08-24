@@ -31,21 +31,6 @@ enthusiastic_amt = 500
 amazing_amt = 1000
 legendary_amt = 2500
 
-class MyClient(dc.Client):
-    async def on_ready(self):
-        toRaise = None
-        try:
-            await update_info(self)
-        except Exception as e:
-            print("Exception thrown in update_info")
-            toRaise = e
-        finally:
-            await self.close()
-
-        if toRaise:
-            print("Re-raising exception")
-            raise toRaise
-
 def patreon_token() -> str:
     if len(sys.argv) > 1:
         print("Token was given on command line")
@@ -97,7 +82,7 @@ def discord_appid() -> str:
         exit(1)
     return token
 
-async def get_discord_name(client: MyClient, patron) -> (None | str):
+async def get_discord_name(client: dc.Client, patron) -> (None | str):
     socials = patron.attribute('social_connections')
     discord = socials['discord']
     if discord:
@@ -108,7 +93,7 @@ async def get_discord_name(client: MyClient, patron) -> (None | str):
             return user.name
     return None
         
-async def get_name(client: MyClient, patron) -> str:
+async def get_name(client: dc.Client, patron) -> str:
     name = await get_discord_name(client, patron)
     if name != None and name != "":
         return name
@@ -126,8 +111,13 @@ async def get_name(client: MyClient, patron) -> str:
     else:
         return first_name
 
-async def update_info(discord_api):
+async def main():
     patreon_api = patreon.API(patreon_token())
+    
+    intents = dc.Intents.default()
+    intents.members = True
+    discord_api = dc.Client(intents=intents, application_id=discord_appid())
+    await discord_api.login(discord_token())
 
     campaign = patreon_api.fetch_campaign()
     campaign_id = campaign.data()[0].id()
@@ -180,6 +170,9 @@ async def update_info(discord_api):
         else:
             print(f"A user was declined")
 
+    # close discord connection
+    await discord_api.close()
+
     usable_pledges.sort(key=lambda x: x['alltime'], reverse=True)
     patronfile = patrons.read(patrons_filepath)
 
@@ -200,10 +193,11 @@ async def update_info(discord_api):
 
 
 if __name__ == '__main__':
-    intents = dc.Intents.default()
-    intents.members = True
-    client = MyClient(intents=intents, application_id=discord_appid())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     try:
-        client.run(token=discord_token())
+        loop.run_until_complete(main())
     except:
-        exit(1)
+        # if there is any exception, exit with an exit code
+        print("Exception ocurred in main async function")
+        exit(2)
