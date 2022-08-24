@@ -6,6 +6,13 @@ on:
     # every day at 3:45 AM UTC (arbitrarily chosen)
     - cron: '45 3 * * *'
   workflow_dispatch:
+  push:
+    branches: 
+      - 'master'
+    paths:
+      - 'fetch.py'
+      - 'patrons.py'
+      - '.github/workflows/patrons_update.yml'
 
 jobs:
   schedule-patrons:
