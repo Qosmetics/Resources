@@ -1,5 +1,6 @@
 import patreon
 import discord as dc
+from discord.ext import commands
 
 # command line args
 import sys
@@ -29,6 +30,11 @@ official_amt = 200
 enthusiastic_amt = 500
 amazing_amt = 1000
 legendary_amt = 2500
+
+class MyClient(dc.Client):
+    async def on_ready(self):
+        await update_info(self)
+        await self.close()
 
 def patreon_token() -> str:
     if len(sys.argv) > 1:
@@ -81,17 +87,18 @@ def discord_appid() -> str:
         exit(1)
     return token
 
-async def get_discord_name(client, patron) -> (None | str):
+async def get_discord_name(client: MyClient, patron) -> (None | str):
     socials = patron.attribute('social_connections')
     discord = socials['discord']
     if discord:
-        discord_user_id = int(discord['user_id'])
-        user = await client.get_user_info(discord_user_id)
+        uid = int(discord['user_id'])
+        # note to self, use fetch_user to forcibly get it from the API instead of from cache with get_user
+        user = await client.fetch_user(uid)
         if user:
             return user.name
     return None
         
-async def get_name(client, patron) -> str:
+async def get_name(client: MyClient, patron) -> str:
     name = await get_discord_name(client, patron)
     if name != None and name != "":
         return name
@@ -109,12 +116,7 @@ async def get_name(client, patron) -> str:
     else:
         return first_name
 
-class MyClient(dc.Client):
-    async def on_ready(self):
-        await main(self)
-
-
-async def main(discord_api):
+async def update_info(discord_api):
     patreon_api = patreon.API(patreon_token())
 
     campaign = patreon_api.fetch_campaign()
@@ -189,11 +191,9 @@ async def main(discord_api):
 
 if __name__ == '__main__':
     intents = dc.Intents.default()
-    client = MyClient(application_id = discord_appid(), intents=intents)
-    #try:
-    client.run(discord_token())
-    #except:
-    #    client.close();
-    #    exit(1)
-    #finally:
-    #    client.close();
+    intents.members = True
+    client = MyClient(intents=intents, application_id=discord_appid())
+    try:
+        client.run(token=discord_token())
+    except:
+        exit(1)
