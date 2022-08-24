@@ -42,7 +42,7 @@ class MyClient(dc.Client):
         finally:
             await self.close()
 
-        if toRaise != None:
+        if toRaise:
             print("Re-raising exception")
             raise toRaise
 
