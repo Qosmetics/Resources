@@ -111,7 +111,7 @@ async def get_name(client, patron) -> str:
 
 async def main():
     patreon_api = patreon.API(patreon_token())
-    discord_api = dc.Client(application_id = discord_appid())
+    discord_api = dc.Client()
     await discord_api.login(discord_token())
 
     campaign = patreon_api.fetch_campaign()
