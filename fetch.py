@@ -188,6 +188,7 @@ async def main(discord_api):
 
 
 if __name__ == '__main__':
-    client = MyClient(application_id = discord_appid())
+    intents = dc.Intents.default()
+    client = MyClient(application_id = discord_appid(), intents=intents)
     client.run(discord_token())
     print('Done!')
