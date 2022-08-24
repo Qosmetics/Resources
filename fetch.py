@@ -33,8 +33,10 @@ legendary_amt = 2500
 
 class MyClient(dc.Client):
     async def on_ready(self):
-        await update_info(self)
-        await self.close()
+        try:
+            await update_info(self)
+        finally:
+            await self.close()
 
 def patreon_token() -> str:
     if len(sys.argv) > 1:
