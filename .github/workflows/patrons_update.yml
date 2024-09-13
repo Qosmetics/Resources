@@ -7,7 +7,7 @@ on:
     - cron: '45 3 * * *'
   workflow_dispatch:
   push:
-    branches: 
+    branches:
       - 'master'
     paths:
       - 'fetch.py'
@@ -39,7 +39,7 @@ jobs:
         run: echo ::set-output name=HASH::"${{hashFiles('./files/patrons.json')}}"
 
       - name: Upload patrons artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: patrons.json
           path: './files/patrons.json'
